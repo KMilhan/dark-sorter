@@ -1,1 +1,0 @@
-"""Astrophotography Dark Frame Sorter."""
