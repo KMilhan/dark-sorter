@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "dark-sorter"
+name = "dark_sorter"
 version = "0.1.0"
-description = "Astrophotography Dark Frme Sorter"
+description = "Astrophotography Dark Frame Sorter"
 authors = ["Milhan Kim"]
 license = "MIT"
 readme = "README.md"
@@ -9,6 +9,8 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 astropy = "^5.3.3"
+typer = {extras = ["all"], version = "^0.9.0"}
+python-dateutil = "^2.8.2"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"
@@ -18,3 +20,6 @@ pytest = "^7.4.2"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+dark_sorter = 'dark_sorter.__main__:entrypoint'

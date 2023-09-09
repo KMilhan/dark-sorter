@@ -1,10 +1,15 @@
-from hashlib import sha1
+import logging
+from datetime import datetime
+from hashlib import md5
 from pathlib import Path
 
+import dateutil.parser
 from astropy.io import fits
 from astropy.io.fits import PrimaryHDU
 
 DEFAULT_CCD_TEMP = 100
+
+logger = logging.getLogger(__name__)
 
 
 def get_hdu(file: Path) -> PrimaryHDU:
@@ -12,15 +17,21 @@ def get_hdu(file: Path) -> PrimaryHDU:
 
 
 def get_camera_name(hdu: PrimaryHDU) -> str:
-    return hdu.header["INSTRUME"]
+    return hdu.header["INSTRUME"].replace("ZWO CCD", "ZWO")
 
 
 def get_frame_type(hdu: PrimaryHDU) -> str:
+    if "FRAME" not in hdu.header:
+        return "light"
     return hdu.header["FRAME"]
 
 
 def get_exposure_time(hdu: PrimaryHDU) -> float:
     return float(hdu.header["EXPTIME"])
+
+
+def get_date(hdu: PrimaryHDU) -> datetime:
+    return dateutil.parser.parse(hdu.header["DATE-OBS"])
 
 
 def get_ccd_temp(hdu: PrimaryHDU) -> int:
@@ -37,10 +48,18 @@ def get_iso_or_gain(hdu: PrimaryHDU) -> str:
         return f"ISO_{hdu.header['ISOSPEED']}"
 
 
+def get_header_hash(hdu: PrimaryHDU) -> int:
+    str_header = ""
+    for key in hdu.header:
+        str_header += str(hdu.header[key])
+    return int(md5(str_header.encode()).hexdigest(), 16)
+
+
 class FITS:
     def __init__(self, path: Path, hdu: PrimaryHDU):
         self.path = path
         self.hdu = hdu
+        self._hash: int | None = None
 
     @property
     def camera(self) -> str:
@@ -61,16 +80,12 @@ class FITS:
     @property
     def gain_or_iso(self) -> str:
         return get_iso_or_gain(self.hdu)
+
+    @property
+    def date(self):
+        return get_date(self.hdu)
+
     def __hash__(self):
-        return int(sha1(self.hdu.data).hexdigest(), 16)
-
-
-def read_all_fits_files(root: Path) -> list[FITS]:
-    paths = list(root.rglob("*.fits"))
-    res: list[FITS] = []
-    for idx in range(len(paths)):
-        hdu = get_hdu(paths[idx])
-        fits_files = FITS(paths[idx], hdu)
-        if fits_files.frame_type == "dark":
-            res.append(FITS(paths[idx], hdu))
-    return res
+        if not self._hash:
+            self._hash = get_header_hash(self.hdu)
+        return self._hash
