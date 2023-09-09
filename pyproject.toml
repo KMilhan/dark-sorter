@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "dark-sorter"
+version = "0.1.0"
+description = "Astrophotography Dark Frme Sorter"
+authors = ["Milhan Kim"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+astropy = "^5.3.3"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.7.0"
+ruff = "^0.0.287"
+pytest = "^7.4.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
