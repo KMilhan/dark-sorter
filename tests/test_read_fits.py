@@ -1,0 +1,5 @@
+from pathlib import Path
+
+here = Path(__file__).parent
+resources = here / "resources"
+
