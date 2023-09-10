@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_hdu(file: Path) -> PrimaryHDU:
+    # Error handling can be added here to handle exceptions like FileNotFound, PermissionError, etc.
     return fits.open(file)[0]
 
 

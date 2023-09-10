@@ -31,19 +31,19 @@ utility comes with a Command-Line Interface (CLI) for ease of use.
 # Installation
 
 ```bash
-pip install dark_sorter
+pip install darksorter
 ```
 
 # Usage
 
 ```bash
-dark_sorter where/i/have/all/my/fits new/dark/location
+darksorter where/i/have/all/my/fits new/dark/location
 ```
 
 # CLI Options
 
 ```bash
-dark_sorter --help
+darksorter --help
 ```
 
 # Contributing

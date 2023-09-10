@@ -6,13 +6,15 @@ from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.table import Table
 
-from dark_sorter.reader import FITS, get_hdu, logger
-from dark_sorter.writer import get_new_path, write_if_not_exist
+from darksorter.reader import FITS, get_hdu, logger
+from darksorter.writer import get_new_path, write_if_not_exist
 
 console = Console()
 
 
+# Function to read all dark FITS files: Consider breaking this down if it gets too complex.
 def read_all_dark_fits_files(root: Path) -> list[FITS]:
+    # Error handling can be added here to gracefully handle exceptions (e.g., FileNotFound, PermissionError).
     with Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
@@ -38,11 +40,11 @@ def read_all_dark_fits_files(root: Path) -> list[FITS]:
     return res
 
 
-def main(root: Path, new_path: Path, copy: bool = True):
+def main(fits_library: Path, dark_library: Path, copy: bool = True):
     print(
-        f"Find dark frames from [bold green]{root}[/bold green] and construct dark library at [bold green]{new_path}[/bold green]"
+        f"Find dark frames from [bold green]{fits_library}[/bold green] and construct dark library at [bold green]{dark_library}[/bold green]"
     )
-    all_dark_files = read_all_dark_fits_files(root)
+    all_dark_files = read_all_dark_fits_files(fits_library)
 
     with Progress(
         SpinnerColumn(),
@@ -52,13 +54,13 @@ def main(root: Path, new_path: Path, copy: bool = True):
         progress.add_task(
             description=f"Hashing and sorting {len(all_dark_files)} files", total=None
         )
-        all_dark_files.sort(key=lambda x: get_new_path(new_path, x))
+        all_dark_files.sort(key=lambda x: get_new_path(dark_library, x))
         print(f"Found {len(all_dark_files)} dark frames")
 
     table = Table("Old location", "New location")
     for fits in all_dark_files:
-        if not get_new_path(new_path, fits).exists():
-            table.add_row(str(fits.path), str(get_new_path(new_path, fits)))
+        if not get_new_path(dark_library, fits).exists():
+            table.add_row(str(fits.path), str(get_new_path(dark_library, fits)))
 
     console.print(table)
 
@@ -72,8 +74,8 @@ def main(root: Path, new_path: Path, copy: bool = True):
     with typer.progressbar(length=len(all_dark_files)) as progress:
         for idx in range(len(all_dark_files)):
             progress.update(1)
-            progress.label = str(get_new_path(new_path, all_dark_files[idx]))
-            write_if_not_exist(new_path, all_dark_files[idx], copy)
+            progress.label = str(get_new_path(dark_library, all_dark_files[idx]))
+            write_if_not_exist(dark_library, all_dark_files[idx], copy)
 
 
 def entrypoint():

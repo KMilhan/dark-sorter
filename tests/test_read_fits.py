@@ -3,7 +3,7 @@ from pathlib import Path
 
 from astropy.io import fits
 
-from dark_sorter.reader import (
+from darksorter.reader import (
     get_hdu,
     get_camera_name,
     get_ccd_temp,
@@ -11,7 +11,7 @@ from dark_sorter.reader import (
     get_date,
     get_header_hash,
 )
-from dark_sorter.__main__ import read_all_dark_fits_files
+from darksorter.__main__ import read_all_dark_fits_files
 
 here = Path(__file__).parent
 resources = here / "resources"

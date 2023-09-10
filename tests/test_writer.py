@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from dark_sorter.reader import get_hdu, FITS
-from dark_sorter.writer import get_new_path, write_if_not_exist
+from darksorter.reader import get_hdu, FITS
+from darksorter.writer import get_new_path, write_if_not_exist
 
 here = Path(__file__).parent
 resources = here / "resources"

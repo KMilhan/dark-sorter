@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from dark_sorter.reader import FITS
+from darksorter.reader import FITS
 
 
 def get_new_path(base: Path, fits_file: FITS) -> Path:
