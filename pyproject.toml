@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "darksorter"
-version = "0.1.1"
+version = "0.1.2"
 description = "Astrophotography Dark Frame Sorter"
 authors = ["Milhan Kim"]
 license = "MIT"
@@ -22,4 +22,4 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-darksorter = 'dark_sorter.__main__:entrypoint'
+darksorter = 'darksorter.__main__:entrypoint'
