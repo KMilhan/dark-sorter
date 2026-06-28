@@ -12,7 +12,7 @@ def get_new_path(base: Path, fits_file: FITS) -> Path:
                 str(hash(fits_file)),
             ]
         )
-        + ".fits"
+        + fits_file.path.suffix
     )
     return (
         base

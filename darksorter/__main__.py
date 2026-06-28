@@ -6,43 +6,47 @@ from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.table import Table
 
-from darksorter.reader import FITS, get_hdu, logger
+from darksorter.reader import FITS, SUPPORTED_FILE_SUFFIXES, get_hdu, logger
 from darksorter.writer import get_new_path, write_if_not_exist
 
 console = Console()
 
 
-# Function to read all dark FITS files: Consider breaking this down if it gets too complex.
 def read_all_dark_fits_files(root: Path) -> list[FITS]:
-    # Error handling can be added here to gracefully handle exceptions (e.g., FileNotFound, PermissionError).
     with Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
         transient=True,
     ) as progress:
-        progress.add_task(description="Finding all dark FITS files...", total=None)
-        paths = list(root.rglob("*.fits"))
+        progress.add_task(description="Finding all dark files...", total=None)
+        paths = [
+            path
+            for path in root.rglob("*")
+            if path.is_file() and path.suffix.casefold() in SUPPORTED_FILE_SUFFIXES
+        ]
     res: list[FITS] = []
-    print("Reading dark FITS files")
+    print("Reading dark files")
     with typer.progressbar(length=len(paths)) as progress:
         for idx in range(len(paths)):
             progress.update(1)
             progress.label = str(paths[idx])
             try:
                 hdu = get_hdu(paths[idx])
-            except OSError:
-                logger.debug(f"Found empty or corrupt FITS file: {paths[idx]}")
+            except (OSError, ValueError):
+                logger.debug(f"Found empty or corrupt file: {paths[idx]}")
                 continue
             fits_file = FITS(paths[idx], hdu)
             if fits_file.frame_type == "dark":
-                res.append(FITS(paths[idx], hdu))
+                res.append(fits_file)
     print("Read all files")
     return res
 
 
-def main(fits_library: Path, dark_library: Path, copy: bool = True):
+def main(fits_library: Path, dark_library: Path, copy: bool = True) -> None:
     print(
-        f"Find dark frames from [bold green]{fits_library}[/bold green] and construct dark library at [bold green]{dark_library}[/bold green]"
+        "Find dark frames from "
+        f"[bold green]{fits_library}[/bold green] and construct dark library at "
+        f"[bold green]{dark_library}[/bold green]"
     )
     all_dark_files = read_all_dark_fits_files(fits_library)
 

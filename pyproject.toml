@@ -1,25 +1,62 @@
-[tool.poetry]
+[project]
 name = "darksorter"
 version = "0.1.2"
 description = "Astrophotography Dark Frame Sorter"
-authors = ["Milhan Kim"]
+authors = [{ name = "Milhan Kim" }]
 license = "MIT"
 readme = "README.md"
+requires-python = ">=3.11,<3.13"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Astronomy",
+]
+dependencies = [
+    "astropy<6",
+    "exifread<4",
+    "numpy<2",
+    "python-dateutil<3",
+    "rawpy<1",
+    "rich<15",
+    "typer<1",
+]
 
-[tool.poetry.dependencies]
-python = "^3.11"
-astropy = "<6"
-typer = {extras = ["all"], version = "<1"}
-python-dateutil = "<3"
+[project.scripts]
+darksorter = "darksorter.__main__:entrypoint"
 
-[tool.poetry.group.dev.dependencies]
-black = "*"
-ruff = "*"
-pytest = "*"
+[dependency-groups]
+dev = [
+    "pytest",
+    "ruff",
+    "ty",
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.poetry.scripts]
-darksorter = 'darksorter.__main__:entrypoint'
+[tool.hatch.build.targets.wheel]
+packages = ["darksorter"]
+
+[tool.hatch.build.targets.sdist]
+only-include = ["darksorter", "LICENSE", "README.md", "pyproject.toml"]
+
+[tool.ruff]
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "C90"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ty.environment]
+python-version = "3.11"
+
+[tool.ty.src]
+include = ["darksorter", "tests"]
